@@ -1,0 +1,11 @@
+{
+	"luci-app-esurfing-client": {
+		"description": "Grant access to luci-app-esurfing-client",
+		"read": {
+			"uci": [ "esurfing-client" ]
+		},
+		"write": {
+			"uci": [ "esurfing-client" ]
+		}
+	}
+}

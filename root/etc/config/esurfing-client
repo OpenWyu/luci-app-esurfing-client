@@ -1,0 +1,5 @@
+config esurfing-client
+    option enabled '0'
+    option username ''
+    option password ''
+    option school 'wyu'

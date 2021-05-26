@@ -1,0 +1,102 @@
+#!/bin/sh /etc/rc.common
+
+USE_PROCD=1
+
+START=80
+STOP=10
+
+CONFIGURATION=esurfing-client
+PROG=/usr/bin/esurfing-client/esurfing-client.lua
+
+start_instance()
+{
+    local section="$1"
+
+    config_get_bool enabled "$section" enabled 0
+    
+    [ $enabled -eq 0 ] && return 0
+
+    config_get username "$section" 'username' 
+    config_get password "$section" 'password'
+    config_get macaddr "$section" 'macaddr'
+    config_get clientip "$section" 'clientip'
+    config_get school "$section" 'school'
+    config_get nasip "$section" 'nasip'
+    config_get schoolid "$section" 'schoolid'
+    config_get secretkey "$section" 'secretkey'
+
+
+    procd_open_instance
+    procd_set_param command /usr/bin/lua "$PROG"
+    procd_append_param command "login"
+    procd_append_param command $username
+    procd_append_param command $password
+    if [ "$school" == "others" ]; then
+        procd_append_param command $macaddr
+        procd_append_param command $clientip
+        procd_append_param command $nasip
+        procd_append_param command $schoolid
+        procd_append_param command $secretkey
+    fi
+
+    procd_set_param respawn ${respawn_threshold:-3600} ${respawn_timeout:-5} ${respawn_retry:-5}
+    procd_set_param stdout 0
+    procd_set_param stderr 0
+    procd_close_instance
+}
+
+stop_instance()
+{
+    local section="$1"
+
+    config_get_bool enabled "$section" enabled 0
+    
+    [ $enabled -eq 0 ] && return 0
+
+    config_get username "$section" 'username' 
+    config_get password "$section" 'password'
+    config_get macaddr "$section" 'macaddr'
+    config_get clientip "$section" 'clientip'
+    config_get school "$section" 'school'
+    config_get nasip "$section" 'nasip'
+    config_get schoolid "$section" 'schoolid'
+    config_get secretkey "$section" 'secretkey'
+
+    procd_open_instance
+    procd_set_param command /usr/bin/lua "$PROG"
+    procd_append_param command "logout"
+    procd_append_param command $username
+    if [ "$school" == "others" ]; then
+        procd_append_param command $password
+        procd_append_param command $macaddr
+        procd_append_param command $clientip
+        procd_append_param command $nasip
+        procd_append_param command $schoolid
+        procd_append_param command $secretkey
+    fi
+
+    # procd_set_param respawn
+    procd_set_param stdout 0
+    procd_set_param stderr 0
+    procd_close_instance
+}
+
+start_service()
+{
+    config_load "${CONFIGURATION}"
+    config_foreach start_instance "${CONFIGURATION}"
+    echo "Esurfing Client has started." 
+}
+
+stop_service()
+{
+    config_load "${CONFIGURATION}"
+    config_foreach stop_instance "${CONFIGURATION}"
+    echo "Esurfing Client has stopped."
+}
+
+service_triggers()
+{
+    [ ! -d '/tmp/esurfing-client/' ] && mkdir -p /tmp/esurfing-client/
+    procd_add_reload_trigger "${CONFIGURATION}"
+}

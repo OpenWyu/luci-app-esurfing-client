@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+    delete ucitrack.@esurfing-client[-1]
+    add ucitrack esurfing-client
+    set ucitrack.@esurfing-client[-1].init=esurfing-client
+    commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

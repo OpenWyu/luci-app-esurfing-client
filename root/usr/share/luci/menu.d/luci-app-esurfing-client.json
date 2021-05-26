@@ -1,0 +1,13 @@
+{
+	"admin/services/esurfing-client": {
+		"title": "天翼校园客户端",
+		"action": {
+			"type": "firstchild",
+			"post": { "cbi.submit": true }
+		},
+		"depends": {
+			"acl": [ "luci-app-esurfing-client" ],
+			"uci": { "esurfing-client": true }
+		}
+	}
+}

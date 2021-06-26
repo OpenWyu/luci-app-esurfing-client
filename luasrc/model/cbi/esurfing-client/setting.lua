@@ -1,6 +1,6 @@
 local nwm = require "luci.model.network".init()
-local networks = nwm:get_wan_networks()
-
+local wandev = nwm:get_wandev()
+local net = wandev:get_network()
 
 m = Map("esurfing-client")
 m.title = translate("天翼校园客户端")
@@ -41,14 +41,13 @@ clientip.datatype = "ip4addr"
 clientip.description = translate("系统会自动获取路由器设备WAN口的IP地址作为该值<br/>如果是邑大校园网, 则会自动从认证网站获取clientip(故一般仅用于下线客户端)")
 clientip:depends("school", "others")
 
-for _, net in ipairs(networks) do
-    local mac = net:get_interface():mac()
-    macaddr:value(mac, "%s (%s)" %{ mac, net:name()})
-    macaddr.default = mac
 
-    clientip:value(net:ipaddr(), "%s (%s)" %{ net:ipaddr(), net:name()})
-    clientip.default = net:ipaddr()
-end
+local mac = wandev:mac()
+macaddr:value(mac, "%s (%s)" %{ mac, net:name()})
+macaddr.default = mac
+
+clientip:value(net:ipaddr(), "%s (%s)" %{ net:ipaddr(), net:name()})
+clientip.default = net:ipaddr()
 
 nasip = s:option(Value, "nasip", translate("NASIP地址"))
 nasip.rmempty = true

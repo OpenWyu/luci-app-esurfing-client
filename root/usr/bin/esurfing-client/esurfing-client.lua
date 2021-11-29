@@ -1018,6 +1018,10 @@ function utils.get_normal_authenticator(clientip, nasip, macaddr, timestamp, sec
   return string.upper(md5.sumhexa(clientip .. nasip .. macaddr .. timestamp .. secretkey))
 end
 
+function utils.get_vcode_authenticator(version, clientip, nasip, macaddr, timestamp, secretkey)
+  return string.upper(md5.sumhexa(version .. clientip .. nasip .. macaddr .. timestamp .. secretkey))
+end
+
 function utils.get_login_authenticator(clientip, nasip, macaddr, timestamp, vcode, secretkey)
   return string.upper(md5.sumhexa(clientip .. nasip .. macaddr .. timestamp .. vcode .. secretkey))
 end
@@ -1103,6 +1107,8 @@ local password     = ""
 local clientip     = ""
 -- MAC地址格式为XX:XX:XX:XX:XX:XX
 local macaddr      = ""
+-- 新增变量 版本号
+local version      = "214"
 -- 以下三个变量对同一学校而言可认为是固定常数
 local nasip        = "119.146.175.80"
 local schoolid     = "1414"
@@ -1190,15 +1196,16 @@ end
 function get_vcode()
   local timestamp = os.time() * 1000
   local code, _, response_body = requests.json {
-    url = "http://enet.10000.gd.cn:10001/client/challenge",
+    url = "http://enet.10000.gd.cn:10001/client/vchallenge",
     cookie = cookie,
     body = {
+      version = version,
       username = username,
       clientip = clientip,
       nasip = nasip,
       mac = macaddr,
       timestamp = timestamp,
-      authenticator = utils.get_normal_authenticator(clientip, nasip, macaddr, timestamp, secretkey)
+      authenticator = utils.get_vcode_authenticator(version, clientip, nasip, macaddr, timestamp, secretkey)
     }
   }
   

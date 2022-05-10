@@ -1093,7 +1093,7 @@ local keepalive_enabled = true
 local keepalive_interval = 5 * 60
 
 -- 免打扰模式 默认关闭
-local donotdisturb = true
+local donotdisturb = false
 -- 免打扰模式启用的星期范围 [0 - 6 = 星期天 - 星期六]
 -- 默认值适用于星期天到星期四晚上11点半断网, 第二天早上6点恢复
 local dndweekrange = {0, 1, 2, 3, 4}
